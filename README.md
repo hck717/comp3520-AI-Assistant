@@ -13,75 +13,53 @@ The system is fully containerized using **Docker**, orchestrating **Ollama** (Lo
 
 ## 🏗 System Architecture
 
-The following diagram illustrates the flow of data between the User, the Supervisor Agent, and the specialized Sub-Agents/Tools.
+The following diagram illustrates the flow of data between the User, the Supervisor Agent, and the main tools, all inside your own UI and terminal environment.
 
 ```mermaid
 graph TD
-    %% Users and Interfaces
-    User([User]) -->|Voice/Text| Telegram[Telegram Interface]
-    User -->|Dashboard Interaction| WebUI[Web Dashboard / Chat UI]
-    
-    %% Triggers
-    Telegram -->|Webhook| n8n_Orch[n8n Orchestrator / Supervisor Agent]
-    WebUI -->|API Request| n8n_Orch
-    Cron[7:00 AM Schedule] -->|Morning Briefing| n8n_Orch
-    
-    %% The Brain (AI)
-    n8n_Orch <-->|Inference| Ollama[Ollama (Llama 3.2 / DeepSeek)]
-    n8n_Orch <-->|Safety Check| Critic[Critic Model / Security Auditor]
-    
-    %% Memory & Storage
-    subgraph "Memory & Context"
+    %% User & UI
+    User([User]) -->|Text / Voice| UI[Web Chat UI]
+
+    %% Orchestrator & LLM
+    UI -->|Request| Orchestrator[n8n Orchestrator / Supervisor Agent]
+    Orchestrator <-->|LLM Call| Ollama["Ollama (Llama 3.2)"]
+
+    %% Memory & Data
+    subgraph "Memory & Data"
         VecDB[(Vector Store)]
-        SumMD[Summary.md]
         ExpDB[(Expense DB)]
     end
-    n8n_Orch <--> VecDB
-    n8n_Orch <--> SumMD
-    
-    %% Feature Modules (Sub-Agents)
-    subgraph "Capabilities"
-        %% Voice Pipeline
-        subgraph "Voice Loop"
-            Whisper[OpenAI Whisper (STT)]
-            Kokoro[Kokoro/Coqui (TTS)]
-        end
-        
-        %% Tool Execution
-        subgraph "Sensitive Ops"
-            SSH[SSH Terminal]
-            HumanChk{Human Approval}
-        end
-        
-        %% Data & Docs
-        subgraph "Analysis & Docs"
-            CodeInt[Python Sandbox / Code Interpreter]
-            FileOp[File Operator / PDF Reader]
-        end
-        
-        %% External Tools
-        subgraph "External APIs"
-            GSuite[Gmail / G-Cal / Docs]
-            FinAPI[YFinance / Market Data]
-        end
+    Orchestrator <--> VecDB
+    Orchestrator <--> ExpDB
+
+    %% Tools
+    subgraph "Tools"
+        Whisper["Whisper (STT)"]
+        TTS["Kokoro / Coqui (TTS)"]
+        SSH[SSH Executor]
+        Sheets["Google Sheets / Excel"]
+        Mail["Gmail / Outlook"]
+        Docs["Google Docs / Word"]
+        Cal["Calendar"]
     end
-    
-    %% Connections
-    n8n_Orch --> Whisper
-    Whisper --> Ollama
-    Ollama --> Kokoro
-    Kokoro --> Telegram
-    
-    n8n_Orch -->|Delegation| CodeInt
-    CodeInt -->|Chart Generation| ExpDB
-    
-    n8n_Orch -->|Draft Command| Critic
-    Critic -->|Approved?| HumanChk
-    HumanChk -->|Yes| SSH
-    
-    n8n_Orch --> GSuite
-    n8n_Orch --> FinAPI
+
+    %% Voice Flow (UI-based)
+    Orchestrator --> Whisper
+    Whisper --> Orchestrator
+    Orchestrator --> TTS
+    TTS --> UI
+
+    %% Other Tool Connections
+    Orchestrator --> SSH
+    Orchestrator --> Sheets
+    Orchestrator --> Mail
+    Orchestrator --> Docs
+    Orchestrator --> Cal
+
+    %% Notifications via Terminal
+    Orchestrator -->|Status / Alerts| SSH
 ```
+
 
 ***
 
