@@ -80,7 +80,8 @@ graph TD
 
 ## 🚀 Core Features & Workflows
 
-Tools: - google sheet/ excel 
+Tools: 
+- google sheet/ excel 
 - SSH excute terminal
 - Gmail/ outlook
 - Whatsapp/ telegram 
