@@ -80,6 +80,13 @@ graph TD
 
 ## 🚀 Core Features & Workflows
 
+Tools: - google sheet/ excel 
+- SSH excute terminal
+- Gmail/ outlook
+- Whatsapp/ telegram 
+- Word/ google doc
+- Calendar
+
 ### 1. 🎙️ Multimodal Voice Interface ("Walk & Talk")
 **Goal:** Hands-free interaction while walking.
 *   **Workflow:**
