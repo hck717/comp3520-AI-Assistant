@@ -185,6 +185,7 @@ To ensure manageable development, the project is divided into three equal worklo
 *   [ ] **Interface:** Connect **Telegram Bot API** to n8n Webhook for text-based chat.
 *   [ ] **Orchestration:** Build the foundational **Supervisor Agent** node in n8n to route basic "Chat" vs. "Task" intents.
 *   [ ] **Observability:** Initialize **LangFuse** to trace LLM thoughts and debug the initial agent logic.
+*   [ ] **Interface:** Make up and design the UI interface for the project ( streamlit/ Javascript) 
 
 ### Part 2: Tools, Security & Analytics
 **Focus:** Giving the agent "Hands" (SSH/Tools) and "Eyes" (Google/Data) to perform work.
