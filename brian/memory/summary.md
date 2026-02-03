@@ -46,6 +46,5 @@ Active Projects:
 - Google Calendar: Data Science Classes
 - Today Evening: Gym- Study Focus: What is your study focus?-Tomorrow 9am: Class
  
-(gym tonight)Tomorrow 9am: Class- Today Evening: Gym
-- Today Morning: 
-    * Google Calendar: Data Science ClassesToday Evening: GymTomorrow 9am: Class
+ Tomorrow 8am: Meeting
+ Today Evening: Gym-Today Evening: Google Calendar Reminder

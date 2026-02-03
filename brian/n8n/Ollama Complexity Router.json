@@ -1,0 +1,344 @@
+{
+  "name": "Ollama Complexity Router",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a strict routing system. Your ONLY job is to classify the complexity of the user's input.\n\nYou must output exactly ONE of the following three tokens:\n1. Simple\n2. Medium\n3. Hard\n\n### Rules:\n- Output NOTHING else. No explanations, no punctuation, no markdown.\n- If the input is a factual lookup or formatting task -> Output \"Simple\"\n- If the input is creative writing, email drafting, or summarization -> Output \"Medium\"\n- If the input requires reasoning, math, coding, or multi-step logic -> Output \"Hard\"\n\n### User Input:\n{{ $json.chatInput }}\n"
+      },
+      "id": "e9edd5d5-ee44-4e00-a260-39821a32c6ef",
+      "name": "Classifier Agent",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        -992,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "01f55dd2-593a-4945-9e83-9b7df37815f0",
+                    "leftValue": "={{ $json.text }}",
+                    "rightValue": "Simple",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "9be364b0-f35c-4dcd-b8c2-67ed3bc8a659",
+                    "leftValue": "={{ $json.text }}",
+                    "rightValue": "MEDIU",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "52843313-7117-47a1-8841-06daa8c65c76",
+                    "leftValue": "={{ $json.text }}",
+                    "rightValue": "Hard",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fad6fe75-533d-4d46-855d-24a2d4706de3",
+      "name": "Complexity Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        -624,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gemma3:1b",
+        "options": {}
+      },
+      "id": "cf5a4665-12d5-42d4-a459-ce4ec428466a",
+      "name": "Simple Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        272
+      ],
+      "credentials": {
+        "ollamaApi": {
+          "id": "aEixY7wXetqtn10y",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}"
+      },
+      "id": "5854a695-7829-4f3e-a4d5-71f56067cd4b",
+      "name": "Simple Task Worker",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        -400,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "id": "ac99840f-8408-4951-85ce-8d050e9dbb48",
+      "name": "Medium Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        624
+      ],
+      "credentials": {
+        "ollamaApi": {
+          "id": "aEixY7wXetqtn10y",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}"
+      },
+      "id": "ea68daba-eb33-4c82-8b38-8700d57c335f",
+      "name": "Medium Task Worker",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        -400,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -1296,
+        448
+      ],
+      "id": "ceb45c24-10e2-453b-b8c4-a0c6b0e72485",
+      "name": "When chat message received",
+      "webhookId": "1e039458-92b6-4cba-80b6-d4bd40e427fa"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        -848,
+        656
+      ],
+      "id": "36a22a55-0227-4f48-8694-766cca893c80",
+      "name": "Ollama Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "aEixY7wXetqtn10y",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "id": "d82d75ea-7bfd-433e-8a42-ac0a83e95f07",
+      "name": "Medium Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        912
+      ],
+      "credentials": {
+        "ollamaApi": {
+          "id": "aEixY7wXetqtn10y",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}"
+      },
+      "id": "0c1d2e7d-82a9-495b-9221-fc1c42e81e5a",
+      "name": "HARD Task Worker1",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        -432,
+        752
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Classifier Agent": {
+      "main": [
+        [
+          {
+            "node": "Complexity Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Complexity Switch": {
+      "main": [
+        [
+          {
+            "node": "Simple Task Worker",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Medium Task Worker",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HARD Task Worker1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Classifier Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Classifier Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Medium Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Medium Task Worker",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Simple Task Worker",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Medium Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "HARD Task Worker1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "02e062b9-235d-41c9-8ea6-c8001bdf25f3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c5a7124c6a15aa689633732580bc5d6f62b068d42f261cc729e5309d37ffd914"
+  },
+  "id": "adZh-i2c6fVtVNGWctNHa",
+  "tags": []
+}
