@@ -1,0 +1,471 @@
+{
+  "name": "AI Agent - UI with summary.md",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "chat",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "e7c225f5-f030-4c3e-ab38-257910bc5e36",
+      "name": "Serve UI (GET)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        256,
+        640
+      ],
+      "webhookId": "ui-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const html = `\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>n8n Agent UI</title>\n  <style>\n    :root {\n      --bg-color: #121212;\n      --chat-bg: #1e1e1e;\n      --user-msg: #ea4b71; /* n8n brand color */\n      --bot-msg: #2d2d2d;\n      --text-color: #e0e0e0;\n    }\n    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif; background: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; height: 100vh; }\n    .chat-container { width: 100%; max-width: 600px; background: var(--chat-bg); display: flex; flex-direction: column; height: 100%; box-shadow: 0 0 20px rgba(0,0,0,0.5); }\n    .header { padding: 20px; border-bottom: 1px solid #333; font-weight: bold; display: flex; align-items: center; gap: 10px; }\n    .header-dot { width: 10px; height: 10px; background: #2ecc71; border-radius: 50%; }\n    .messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }\n    .message { max-width: 80%; padding: 12px 16px; border-radius: 12px; line-height: 1.4; font-size: 15px; }\n    .message.user { align-self: flex-end; background: var(--user-msg); color: white; border-bottom-right-radius: 2px; }\n    .message.bot { align-self: flex-start; background: var(--bot-msg); color: var(--text-color); border-bottom-left-radius: 2px; }\n    .input-area { padding: 20px; border-top: 1px solid #333; display: flex; gap: 10px; }\n    input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #2d2d2d; color: white; outline: none; transition: border-color 0.2s; }\n    input:focus { border-color: var(--user-msg); }\n    button { padding: 12px 24px; border-radius: 8px; border: none; background: var(--user-msg); color: white; font-weight: bold; cursor: pointer; transition: opacity 0.2s; }\n    button:hover { opacity: 0.9; }\n    button:disabled { opacity: 0.5; cursor: not-allowed; }\n    .typing { font-size: 12px; color: #888; margin-left: 10px; display: none; }\n  </style>\n</head>\n<body>\n  <div class=\"chat-container\">\n    <div class=\"header\"><div class=\"header-dot\"></div>n8n Agent</div>\n    <div class=\"messages\" id=\"messages\">\n      <div class=\"message bot\">Hello! I am your n8n assistant. How can I help?</div>\n    </div>\n    <div class=\"typing\" id=\"typing\">Agent is thinking...</div>\n    <form class=\"input-area\" id=\"chat-form\">\n      <input type=\"text\" id=\"input\" placeholder=\"Type a message...\" autocomplete=\"off\" />\n      <button type=\"submit\" id=\"send-btn\">Send</button>\n    </form>\n  </div>\n\n  <script>\n    const form = document.getElementById('chat-form');\n    const input = document.getElementById('input');\n    const messages = document.getElementById('messages');\n    const typing = document.getElementById('typing');\n    const sendBtn = document.getElementById('send-btn');\n\n    // ROBUST URL DETECTION\n    // Calculates the API URL relative to the current page\n    const currentPath = window.location.pathname;\n    const basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));\n    const API_URL = window.location.origin + basePath + '/chat-response';\n\n    function addMessage(text, sender) {\n      const div = document.createElement('div');\n      // Escaped backticks for nested template literal\n      div.className = \\`message \\${sender}\\`;\n      div.textContent = text;\n      messages.appendChild(div);\n      messages.scrollTop = messages.scrollHeight;\n    }\n\n    form.addEventListener('submit', async (e) => {\n      e.preventDefault();\n      const text = input.value.trim();\n      if (!text) return;\n\n      addMessage(text, 'user');\n      input.value = '';\n      input.disabled = true;\n      sendBtn.disabled = true;\n      typing.style.display = 'block';\n\n      try {\n        const response = await fetch(API_URL, {\n          method: 'POST',\n          headers: { 'Content-Type': 'application/json' },\n          body: JSON.stringify({ message: text })\n        });\n        \n        const data = await response.json();\n        typing.style.display = 'none';\n        addMessage(data.output || \"No response defined in n8n.\", 'bot');\n        \n      } catch (err) {\n        typing.style.display = 'none';\n        addMessage(\"Error: Could not connect to n8n.\", 'bot');\n        console.error(err);\n      } finally {\n        input.disabled = false;\n        sendBtn.disabled = false;\n        input.focus();\n      }\n    });\n  </script>\n</body>\n</html>\n`;\n\nreturn { html };"
+      },
+      "id": "718258ab-adf9-44f9-abfb-f9692eda8e36",
+      "name": "Define HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.html }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html"
+              }
+            ]
+          }
+        }
+      },
+      "id": "583e8927-4041-4a5d-9342-414cd9b59859",
+      "name": "Respond HTML",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        704,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "fileSelector": "/root/.n8n-files/brian/memory/summary.md",
+        "options": {
+          "dataPropertyName": "data"
+        }
+      },
+      "id": "56b43349-8876-41d1-a719-b5fc80eb69b0",
+      "name": "Read Local File (UTF8)",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        224,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "qwen3:8b",
+          "mode": "list",
+          "cachedResultName": "qwen3:8b"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a helpful assistant. \nUse the User Profile below to understand the user's context (schedule, projects, etc), but answer naturally.\n\n[User Profile]\n{{ $json.data }}\n\n[User Message]\n{{ $('Receive Msg (POST)1').item.json.body.message }}"
+            },
+            {
+              "content": "=Please be reminder the exact date and time now is:\n {{ $now }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dff3f817-bbb5-4f11-b73b-b01bd42d8f45",
+      "name": "Chat Agent",
+      "type": "@n8n/n8n-nodes-langchain.ollama",
+      "typeVersion": 1,
+      "position": [
+        560,
+        944
+      ],
+      "credentials": {
+        "ollamaApi": {
+          "id": "aEixY7wXetqtn10y",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "llama3.2:latest",
+          "mode": "list",
+          "cachedResultName": "llama3.2:latest"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a File Updater.\nTask: Update the \"Current File\" based on the \"User Input\".\n\n### STRICT OUTPUT RULES:\n1. Output ONLY the updated file content.\n2. Do NOT output headers like \"### FILE CONTENT\" or \"### NEW FILE CONTENT\".\n3. Do NOT output <think> tags.\n4. **Standardize Entries**:\n   - Turn \"class tmr 9am\" into \"- Tomorrow 9am: Class\"\n   - Turn \"gym tonight\" into \"- Today Evening: Gym\"\n\n### DATA:\n[Current File]\n{{ $json.data }}\n\n[User Input]\n{{ $('Receive Msg (POST)1').item.json.body.message }}\n\n### RESPONSE (The Updated File Only):"
+            },
+            {
+              "content": "=Please be reminder the exact date and time now is:\n {{ $now }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c37370b2-21ad-4043-bdca-f9b263647f61",
+      "name": "Memory Updater",
+      "type": "@n8n/n8n-nodes-langchain.ollama",
+      "typeVersion": 1,
+      "position": [
+        544,
+        1536
+      ],
+      "credentials": {
+        "ollamaApi": {
+          "id": "aEixY7wXetqtn10y",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "f3400e8c-c828-46f1-8a59-e4f0e3a17184",
+      "name": "Respond to UI",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        944
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat-response",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "f49ab587-59fe-4324-b47d-5f541683946c",
+      "name": "Receive Msg (POST)1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -32,
+        1072
+      ],
+      "webhookId": "msg-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    output: items[0].json.content\n  }\n};"
+      },
+      "id": "c66b63dd-f3cd-4df9-a493-d99098c6f3d9",
+      "name": "Format Response1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        784,
+        944
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Convert the AI's text answer into a binary file object for n8n\nconst textContent = items[0].json.content || \"\";\nconst binaryData = Buffer.from(textContent).toString('base64');\n\nreturn {\n  json: { success: true },\n  binary: {\n    data: {\n      data: binaryData,\n      mimeType: 'text/markdown',\n      fileName: 'summary.md'\n    }\n  }\n};"
+      },
+      "id": "4052a3ec-9553-4618-90a4-7676a7057d52",
+      "name": "Convert to File1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        768,
+        1536
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "/root/.n8n-files/brian/memory/summary.md",
+        "options": {
+          "append": true
+        }
+      },
+      "id": "49e7cf03-fbc5-4444-8fd4-b4380e2b09e9",
+      "name": "Save Summary1",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        992,
+        1536
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        944
+      ],
+      "id": "e58c4a82-ec3d-407c-b8f0-aec8ceb89b21",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=Create an event in Google Calendar based on the user requests:\n {{ $('Receive Msg (POST)1').item.json.body.message }}",
+        "calendar": {
+          "__rl": true,
+          "value": "hobrian2004@gmail.com",
+          "mode": "list",
+          "cachedResultName": "hobrian2004@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        656,
+        1152
+      ],
+      "id": "6e434c95-a42e-40ad-8768-de63282e29b0",
+      "name": "Create an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "xuZqJUxWw7xktbbO",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=FInd an event in Google Calendar based on user's request:\n {{ $('Receive Msg (POST)1').item.json.body.message }}",
+        "operation": "get",
+        "calendar": {
+          "__rl": true,
+          "value": "hobrian2004@gmail.com",
+          "mode": "list",
+          "cachedResultName": "hobrian2004@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        784,
+        1152
+      ],
+      "id": "380db30a-1a8e-4c12-a1b3-d3c6e25e8131",
+      "name": "Get an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "xuZqJUxWw7xktbbO",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "AI agent after receiving the message",
+        "height": 912,
+        "width": 1520
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -160,
+        848
+      ],
+      "typeVersion": 1,
+      "id": "0a3a6bad-32ef-4c13-9e50-07bda3555e1b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Hosting the UI",
+        "height": 224,
+        "width": 752
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        160,
+        576
+      ],
+      "typeVersion": 1,
+      "id": "1ea0ec70-2225-4390-b6b9-ff9a99fdb82a",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Serve UI (GET)": {
+      "main": [
+        [
+          {
+            "node": "Define HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Define HTML": {
+      "main": [
+        [
+          {
+            "node": "Respond HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Local File (UTF8)": {
+      "main": [
+        [
+          {
+            "node": "Memory Updater",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Agent": {
+      "main": [
+        [
+          {
+            "node": "Format Response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memory Updater": {
+      "main": [
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive Msg (POST)1": {
+      "main": [
+        [
+          {
+            "node": "Read Local File (UTF8)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response1": {
+      "main": [
+        [
+          {
+            "node": "Respond to UI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File1": {
+      "main": [
+        [
+          {
+            "node": "Save Summary1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Chat Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "Chat Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "Chat Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "c9c98a50-eab4-47c8-a81b-16b9019225da",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c5a7124c6a15aa689633732580bc5d6f62b068d42f261cc729e5309d37ffd914"
+  },
+  "id": "7723bNPsLfeFLIl4tqo7i",
+  "tags": []
+}
