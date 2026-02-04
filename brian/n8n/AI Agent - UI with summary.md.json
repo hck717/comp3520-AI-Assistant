@@ -7,13 +7,13 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "e7c225f5-f030-4c3e-ab38-257910bc5e36",
+      "id": "ba72708f-05e5-4789-81ea-263c1ca2044b",
       "name": "Serve UI (GET)",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        256,
-        640
+        2384,
+        1712
       ],
       "webhookId": "ui-webhook"
     },
@@ -21,13 +21,13 @@
       "parameters": {
         "jsCode": "const html = `\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>n8n Agent UI</title>\n  <style>\n    :root {\n      --bg-color: #121212;\n      --chat-bg: #1e1e1e;\n      --user-msg: #ea4b71; /* n8n brand color */\n      --bot-msg: #2d2d2d;\n      --text-color: #e0e0e0;\n    }\n    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif; background: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; height: 100vh; }\n    .chat-container { width: 100%; max-width: 600px; background: var(--chat-bg); display: flex; flex-direction: column; height: 100%; box-shadow: 0 0 20px rgba(0,0,0,0.5); }\n    .header { padding: 20px; border-bottom: 1px solid #333; font-weight: bold; display: flex; align-items: center; gap: 10px; }\n    .header-dot { width: 10px; height: 10px; background: #2ecc71; border-radius: 50%; }\n    .messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }\n    .message { max-width: 80%; padding: 12px 16px; border-radius: 12px; line-height: 1.4; font-size: 15px; }\n    .message.user { align-self: flex-end; background: var(--user-msg); color: white; border-bottom-right-radius: 2px; }\n    .message.bot { align-self: flex-start; background: var(--bot-msg); color: var(--text-color); border-bottom-left-radius: 2px; }\n    .input-area { padding: 20px; border-top: 1px solid #333; display: flex; gap: 10px; }\n    input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #2d2d2d; color: white; outline: none; transition: border-color 0.2s; }\n    input:focus { border-color: var(--user-msg); }\n    button { padding: 12px 24px; border-radius: 8px; border: none; background: var(--user-msg); color: white; font-weight: bold; cursor: pointer; transition: opacity 0.2s; }\n    button:hover { opacity: 0.9; }\n    button:disabled { opacity: 0.5; cursor: not-allowed; }\n    .typing { font-size: 12px; color: #888; margin-left: 10px; display: none; }\n  </style>\n</head>\n<body>\n  <div class=\"chat-container\">\n    <div class=\"header\"><div class=\"header-dot\"></div>n8n Agent</div>\n    <div class=\"messages\" id=\"messages\">\n      <div class=\"message bot\">Hello! I am your n8n assistant. How can I help?</div>\n    </div>\n    <div class=\"typing\" id=\"typing\">Agent is thinking...</div>\n    <form class=\"input-area\" id=\"chat-form\">\n      <input type=\"text\" id=\"input\" placeholder=\"Type a message...\" autocomplete=\"off\" />\n      <button type=\"submit\" id=\"send-btn\">Send</button>\n    </form>\n  </div>\n\n  <script>\n    const form = document.getElementById('chat-form');\n    const input = document.getElementById('input');\n    const messages = document.getElementById('messages');\n    const typing = document.getElementById('typing');\n    const sendBtn = document.getElementById('send-btn');\n\n    // ROBUST URL DETECTION\n    // Calculates the API URL relative to the current page\n    const currentPath = window.location.pathname;\n    const basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));\n    const API_URL = window.location.origin + basePath + '/chat-response';\n\n    function addMessage(text, sender) {\n      const div = document.createElement('div');\n      // Escaped backticks for nested template literal\n      div.className = \\`message \\${sender}\\`;\n      div.textContent = text;\n      messages.appendChild(div);\n      messages.scrollTop = messages.scrollHeight;\n    }\n\n    form.addEventListener('submit', async (e) => {\n      e.preventDefault();\n      const text = input.value.trim();\n      if (!text) return;\n\n      addMessage(text, 'user');\n      input.value = '';\n      input.disabled = true;\n      sendBtn.disabled = true;\n      typing.style.display = 'block';\n\n      try {\n        const response = await fetch(API_URL, {\n          method: 'POST',\n          headers: { 'Content-Type': 'application/json' },\n          body: JSON.stringify({ message: text })\n        });\n        \n        const data = await response.json();\n        typing.style.display = 'none';\n        addMessage(data.output || \"No response defined in n8n.\", 'bot');\n        \n      } catch (err) {\n        typing.style.display = 'none';\n        addMessage(\"Error: Could not connect to n8n.\", 'bot');\n        console.error(err);\n      } finally {\n        input.disabled = false;\n        sendBtn.disabled = false;\n        input.focus();\n      }\n    });\n  </script>\n</body>\n</html>\n`;\n\nreturn { html };"
       },
-      "id": "718258ab-adf9-44f9-abfb-f9692eda8e36",
+      "id": "55028145-b07c-477d-9df3-7b487cb85161",
       "name": "Define HTML",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        480,
-        640
+        2608,
+        1712
       ]
     },
     {
@@ -45,13 +45,13 @@
           }
         }
       },
-      "id": "583e8927-4041-4a5d-9342-414cd9b59859",
+      "id": "c6c2fc9a-82d1-451e-b942-23f092c2d91c",
       "name": "Respond HTML",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        704,
-        640
+        2832,
+        1712
       ]
     },
     {
@@ -61,49 +61,14 @@
           "dataPropertyName": "data"
         }
       },
-      "id": "56b43349-8876-41d1-a719-b5fc80eb69b0",
+      "id": "2d685a2f-4037-4a56-b531-79ba5859a36e",
       "name": "Read Local File (UTF8)",
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1,
       "position": [
-        224,
-        1072
+        1616,
+        2304
       ]
-    },
-    {
-      "parameters": {
-        "modelId": {
-          "__rl": true,
-          "value": "qwen3:8b",
-          "mode": "list",
-          "cachedResultName": "qwen3:8b"
-        },
-        "messages": {
-          "values": [
-            {
-              "content": "=You are a helpful assistant. \nUse the User Profile below to understand the user's context (schedule, projects, etc), but answer naturally.\n\n[User Profile]\n{{ $json.data }}\n\n[User Message]\n{{ $('Receive Msg (POST)1').item.json.body.message }}"
-            },
-            {
-              "content": "=Please be reminder the exact date and time now is:\n {{ $now }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "dff3f817-bbb5-4f11-b73b-b01bd42d8f45",
-      "name": "Chat Agent",
-      "type": "@n8n/n8n-nodes-langchain.ollama",
-      "typeVersion": 1,
-      "position": [
-        560,
-        944
-      ],
-      "credentials": {
-        "ollamaApi": {
-          "id": "aEixY7wXetqtn10y",
-          "name": "Ollama account"
-        }
-      }
     },
     {
       "parameters": {
@@ -125,13 +90,234 @@
         },
         "options": {}
       },
-      "id": "c37370b2-21ad-4043-bdca-f9b263647f61",
+      "id": "7209750f-f9be-4026-a15f-904aae17cb3f",
       "name": "Memory Updater",
       "type": "@n8n/n8n-nodes-langchain.ollama",
       "typeVersion": 1,
       "position": [
-        544,
-        1536
+        1936,
+        2768
+      ],
+      "credentials": {
+        "ollamaApi": {
+          "id": "aEixY7wXetqtn10y",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat-response",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "2fb29841-4e74-436e-973d-d60ae1c98dd2",
+      "name": "Receive Msg (POST)1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        2304
+      ],
+      "webhookId": "msg-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Convert the AI's text answer into a binary file object for n8n\nconst textContent = items[0].json.content || \"\";\nconst binaryData = Buffer.from(textContent).toString('base64');\n\nreturn {\n  json: { success: true },\n  binary: {\n    data: {\n      data: binaryData,\n      mimeType: 'text/markdown',\n      fileName: 'summary.md'\n    }\n  }\n};"
+      },
+      "id": "6322fe86-24b8-4b48-9b39-7b7a406b3e52",
+      "name": "Convert to File1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2160,
+        2768
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "/root/.n8n-files/brian/memory/summary.md",
+        "options": {
+          "append": true
+        }
+      },
+      "id": "ac6c3c2c-9bc6-4ffd-a951-5624e47ffc10",
+      "name": "Save Summary1",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        2384,
+        2768
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        2160,
+        2208
+      ],
+      "id": "de63df95-9d85-4639-9f60-7dc49deda20b",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "content": "AI agent after receiving the message",
+        "height": 1104,
+        "width": 3120
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1216,
+        1968
+      ],
+      "typeVersion": 1,
+      "id": "b25af3ee-58c1-4708-a577-e72971a7cdc9",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Host the UI",
+        "height": 224,
+        "width": 752
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2304,
+        1616
+      ],
+      "typeVersion": 1,
+      "id": "c3dbcb72-3f50-42dc-a785-5b5c38e5628c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a strict routing system. Your ONLY job is to classify the complexity of the user's input.\n\nYou must output exactly ONE of the following three tokens:\n1. Simple\n2. Hard\n\n### Rules:\n- Output NOTHING else. No explanations, no punctuation, no markdown.\n- If the input is a factual lookup or formatting task -> Output \"Simple\"\n- If the input requires reasoning, math, coding, or multi-step logic -> Output \"Hard\"\n\n### User Input:\n{{ $('Receive Msg (POST)1').item.json.body.message }}\n"
+      },
+      "id": "193186fd-7130-4f60-b0db-9628086976d4",
+      "name": "Classifier Agent",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        2912,
+        2304
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "9be364b0-f35c-4dcd-b8c2-67ed3bc8a659",
+                    "leftValue": "={{ $json.text }}",
+                    "rightValue": "Simple",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "52843313-7117-47a1-8841-06daa8c65c76",
+                    "leftValue": "={{ $json.text }}",
+                    "rightValue": "Hard",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ad2fdea4-269d-404b-af45-343f843b1f69",
+      "name": "Complexity Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        3280,
+        2288
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        3056,
+        2512
+      ],
+      "id": "52657cc9-ef93-46ad-9831-5b89c3456084",
+      "name": "Ollama Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "aEixY7wXetqtn10y",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "llama3.2:latest",
+          "mode": "list",
+          "cachedResultName": "llama3.2:latest"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a helpful assistant. \nUse the User Profile below to understand the user's context (schedule, projects, etc), but answer naturally.\n\n[User Profile]\n{{ $json.data }}\n\n[User Message]\n{{ $('Receive Msg (POST)1').item.json.body.message }}"
+            },
+            {
+              "content": "=Please be reminder the exact date and time now is:\n {{ $now }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "63ff4e8b-ee21-4b59-839f-0d9cdb7b9319",
+      "name": "Chat Agent2",
+      "type": "@n8n/n8n-nodes-langchain.ollama",
+      "typeVersion": 1,
+      "position": [
+        3536,
+        2256
       ],
       "credentials": {
         "ollamaApi": {
@@ -155,88 +341,27 @@
           }
         }
       },
-      "id": "f3400e8c-c828-46f1-8a59-e4f0e3a17184",
-      "name": "Respond to UI",
+      "id": "a35d8cc4-579b-4060-823f-28db6ba4e655",
+      "name": "Respond to UI2",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        1008,
-        944
+        3984,
+        2256
       ]
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "chat-response",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "id": "f49ab587-59fe-4324-b47d-5f541683946c",
-      "name": "Receive Msg (POST)1",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [
-        -32,
-        1072
-      ],
-      "webhookId": "msg-webhook"
     },
     {
       "parameters": {
         "jsCode": "return {\n  json: {\n    output: items[0].json.content\n  }\n};"
       },
-      "id": "c66b63dd-f3cd-4df9-a493-d99098c6f3d9",
-      "name": "Format Response1",
+      "id": "dc039341-d37f-4ff9-a7d4-2060b34d6cdc",
+      "name": "Format Response2",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        784,
-        944
+        3760,
+        2256
       ]
-    },
-    {
-      "parameters": {
-        "jsCode": "// Convert the AI's text answer into a binary file object for n8n\nconst textContent = items[0].json.content || \"\";\nconst binaryData = Buffer.from(textContent).toString('base64');\n\nreturn {\n  json: { success: true },\n  binary: {\n    data: {\n      data: binaryData,\n      mimeType: 'text/markdown',\n      fileName: 'summary.md'\n    }\n  }\n};"
-      },
-      "id": "4052a3ec-9553-4618-90a4-7676a7057d52",
-      "name": "Convert to File1",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        768,
-        1536
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "write",
-        "fileName": "/root/.n8n-files/brian/memory/summary.md",
-        "options": {
-          "append": true
-        }
-      },
-      "id": "49e7cf03-fbc5-4444-8fd4-b4380e2b09e9",
-      "name": "Save Summary1",
-      "type": "n8n-nodes-base.readWriteFile",
-      "typeVersion": 1,
-      "position": [
-        992,
-        1536
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "text",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.extractFromFile",
-      "typeVersion": 1.1,
-      "position": [
-        416,
-        944
-      ],
-      "id": "e58c4a82-ec3d-407c-b8f0-aec8ceb89b21",
-      "name": "Extract from File"
     },
     {
       "parameters": {
@@ -255,11 +380,11 @@
       "type": "n8n-nodes-base.googleCalendarTool",
       "typeVersion": 1.3,
       "position": [
-        656,
-        1152
+        3440,
+        2448
       ],
-      "id": "6e434c95-a42e-40ad-8768-de63282e29b0",
-      "name": "Create an event in Google Calendar",
+      "id": "b947b409-dbe3-474c-92dd-97985f1feacf",
+      "name": "Create an event in Google Calendar2",
       "credentials": {
         "googleCalendarOAuth2Api": {
           "id": "xuZqJUxWw7xktbbO",
@@ -284,11 +409,11 @@
       "type": "n8n-nodes-base.googleCalendarTool",
       "typeVersion": 1.3,
       "position": [
-        784,
-        1152
+        3584,
+        2448
       ],
-      "id": "380db30a-1a8e-4c12-a1b3-d3c6e25e8131",
-      "name": "Get an event in Google Calendar",
+      "id": "51e03c3c-c4cb-4250-a931-637f2c1f5107",
+      "name": "Get an event in Google Calendar2",
       "credentials": {
         "googleCalendarOAuth2Api": {
           "id": "xuZqJUxWw7xktbbO",
@@ -298,33 +423,229 @@
     },
     {
       "parameters": {
-        "content": "AI agent after receiving the message",
-        "height": 912,
-        "width": 1520
+        "modelId": {
+          "__rl": true,
+          "value": "qwen3:8b",
+          "mode": "list",
+          "cachedResultName": "qwen3:8b"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a helpful assistant. \nUse the User Profile below to understand the user's context (schedule, projects, etc), but answer naturally.\n\n[User Profile]\n{{ $json.data }}\n\n[User Message]\n{{ $('Receive Msg (POST)1').item.json.body.message }}"
+            },
+            {
+              "content": "=Please be reminder the exact date and time now is:\n {{ $now }}"
+            }
+          ]
+        },
+        "options": {}
       },
-      "type": "n8n-nodes-base.stickyNote",
-      "position": [
-        -160,
-        848
-      ],
+      "id": "622c35bb-807a-4da5-81f6-f09d409a81b7",
+      "name": "Chat Agent3",
+      "type": "@n8n/n8n-nodes-langchain.ollama",
       "typeVersion": 1,
-      "id": "0a3a6bad-32ef-4c13-9e50-07bda3555e1b",
-      "name": "Sticky Note"
+      "position": [
+        3536,
+        2704
+      ],
+      "credentials": {
+        "ollamaApi": {
+          "id": "aEixY7wXetqtn10y",
+          "name": "Ollama account"
+        }
+      }
     },
     {
       "parameters": {
-        "content": "Hosting the UI",
-        "height": 224,
-        "width": 752
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
       },
-      "type": "n8n-nodes-base.stickyNote",
-      "position": [
-        160,
-        576
-      ],
+      "id": "2ef22dd7-7d1a-4356-8388-581b8074cff0",
+      "name": "Respond to UI3",
+      "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "id": "1ea0ec70-2225-4390-b6b9-ff9a99fdb82a",
-      "name": "Sticky Note1"
+      "position": [
+        3984,
+        2704
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    output: items[0].json.content\n  }\n};"
+      },
+      "id": "f9a4343e-53ca-406a-8795-44d6a47a7128",
+      "name": "Format Response3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3760,
+        2704
+      ]
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=Create an event in Google Calendar based on the user requests:\n {{ $('Receive Msg (POST)1').item.json.body.message }}",
+        "calendar": {
+          "__rl": true,
+          "value": "hobrian2004@gmail.com",
+          "mode": "list",
+          "cachedResultName": "hobrian2004@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        3632,
+        2912
+      ],
+      "id": "07a7e3de-e780-4b16-a2fa-2a04b9a583d6",
+      "name": "Create an event in Google Calendar3",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "xuZqJUxWw7xktbbO",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=FInd an event in Google Calendar based on user's request:\n {{ $('Receive Msg (POST)1').item.json.body.message }}",
+        "operation": "get",
+        "calendar": {
+          "__rl": true,
+          "value": "hobrian2004@gmail.com",
+          "mode": "list",
+          "cachedResultName": "hobrian2004@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        3760,
+        2912
+      ],
+      "id": "0242f80c-35ea-4922-a5f4-28f0e757a745",
+      "name": "Get an event in Google Calendar3",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "xuZqJUxWw7xktbbO",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Doc_ID_or_URL', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        3728,
+        2448
+      ],
+      "id": "30330dce-4ad7-4ccb-a212-431b1dfa36ea",
+      "name": "Get a document in Google Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "QEAYKgFrJJZQDpMX",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Doc_ID_or_URL', ``, 'string') }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('actionFields0_Text', ``, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        3872,
+        2448
+      ],
+      "id": "ac60f456-06e3-41f2-a31f-65967b047297",
+      "name": "Update a document in Google Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "QEAYKgFrJJZQDpMX",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Doc_ID_or_URL', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        3920,
+        2912
+      ],
+      "id": "1b45d6ee-957f-47fd-8d27-15a8810a5930",
+      "name": "Get a document in Google Docs1",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "QEAYKgFrJJZQDpMX",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Doc_ID_or_URL', ``, 'string') }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('actionFields0_Text', ``, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        4080,
+        2896
+      ],
+      "id": "583d00a7-b3b5-47d4-a042-f87ed375c93c",
+      "name": "Update a document in Google Docs1",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "QEAYKgFrJJZQDpMX",
+          "name": "Google Docs account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -367,17 +688,6 @@
         ]
       ]
     },
-    "Chat Agent": {
-      "main": [
-        [
-          {
-            "node": "Format Response1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Memory Updater": {
       "main": [
         [
@@ -400,17 +710,6 @@
         ]
       ]
     },
-    "Format Response1": {
-      "main": [
-        [
-          {
-            "node": "Respond to UI",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Convert to File1": {
       "main": [
         [
@@ -426,29 +725,179 @@
       "main": [
         [
           {
-            "node": "Chat Agent",
+            "node": "Classifier Agent",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Create an event in Google Calendar": {
+    "Classifier Agent": {
+      "main": [
+        [
+          {
+            "node": "Complexity Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Complexity Switch": {
+      "main": [
+        [
+          {
+            "node": "Chat Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Chat Agent3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Classifier Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Agent2": {
+      "main": [
+        [
+          {
+            "node": "Format Response2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response2": {
+      "main": [
+        [
+          {
+            "node": "Respond to UI2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Google Calendar2": {
       "ai_tool": [
         [
           {
-            "node": "Chat Agent",
+            "node": "Chat Agent2",
             "type": "ai_tool",
             "index": 0
           }
         ]
       ]
     },
-    "Get an event in Google Calendar": {
+    "Get an event in Google Calendar2": {
       "ai_tool": [
         [
           {
-            "node": "Chat Agent",
+            "node": "Chat Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Agent3": {
+      "main": [
+        [
+          {
+            "node": "Format Response3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response3": {
+      "main": [
+        [
+          {
+            "node": "Respond to UI3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Google Calendar3": {
+      "ai_tool": [
+        [
+          {
+            "node": "Chat Agent3",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get an event in Google Calendar3": {
+      "ai_tool": [
+        [
+          {
+            "node": "Chat Agent3",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a document in Google Docs": {
+      "ai_tool": [
+        [
+          {
+            "node": "Chat Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document in Google Docs": {
+      "ai_tool": [
+        [
+          {
+            "node": "Chat Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a document in Google Docs1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Chat Agent3",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document in Google Docs1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Chat Agent3",
             "type": "ai_tool",
             "index": 0
           }
@@ -461,7 +910,7 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "c9c98a50-eab4-47c8-a81b-16b9019225da",
+  "versionId": "2c4f5225-b4d9-48f7-9616-dd0fd7f39945",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "c5a7124c6a15aa689633732580bc5d6f62b068d42f261cc729e5309d37ffd914"

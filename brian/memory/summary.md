@@ -47,4 +47,17 @@ Active Projects:
 - Today Evening: Gym- Study Focus: What is your study focus?-Tomorrow 9am: Class
  
  Tomorrow 8am: Meeting
- Today Evening: Gym-Today Evening: Google Calendar Reminder
+ Today Evening: Gym-Today Evening: Google Calendar Reminder- Today Evening: Gym- Today Morning: Reminder- Today Morning: Reminder
+- Today Evening: Please go find my COMP3520 n8n in Google Documents, then tell me what is it tellingTomorrow 9am: Class
+Today Evening: GymTomorrow 9am: Class
+Today Evening: Gym
+Please be reminded the exact date and time now is: 
+2026-02-04T10:12:29.402+08:00Tomorrow 9am: Class
+Today Evening: Gym
+Lets Work Tonight: TGT to Aim for A Grade!Today Morning: Alarm 
+Tomorrow 9am: Class
+Today Evening: GymTomorrow 9am: Class - Today Evening: Gym
+Lets work tgt to aim for A grade! 
+2026-02-04T10:16:31.396+08:00Tomorrow 9am: Class
+Today Evening: Gym
+lets work tgt to aim for A grade!
