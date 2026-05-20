@@ -38,25 +38,8 @@ services:
       - ./../../:/root/.n8n-files
     
     depends_on:
-      postgres:
-        condition: service_healthy
       ollama:
         condition: service_started
-
-  postgres:
-    image: postgres:16
-    container_name: postgres
-    environment:
-      POSTGRES_DB: n8n
-      POSTGRES_USER: n8n
-      POSTGRES_PASSWORD: n8n
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U n8n"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
   ollama:
     image: ollama/ollama:latest
@@ -95,5 +78,4 @@ services:
               
 volumes:
   n8n_data:
-  postgres_data:
   ollama_data:
