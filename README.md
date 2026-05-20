@@ -159,20 +159,26 @@ graph TD
 | File | Purpose |
 |:---|:---|
 | `Main Workflow.json` | Full n8n workflow (all nodes + connections) |
-| `brian/memory/summary.md` | Persistent user profile / memory file |
-| `brian/n8n/SSH setup.md` | SSH configuration guide |
-| `docker-compose.yml` | Container orchestration |
+| `main/memory/summary.md` | Persistent user profile / memory file |
+| `main/n8n/` | n8n config, Docker stack, chat UI, and scripts |
+| `main/n8n/docker-compose.yml` | Container orchestration |
 | `Windows_Chat.bat` | Windows launcher for Chat UI |
 | `MAC_Chat.command` | macOS launcher for Chat UI |
+| `SSH setup.md` | SSH configuration guide |
+| `DEPLOYMENT_GUIDE.md` | Step-by-step deployment instructions |
 
 ## 📂 Folder Structure
 
 ```text
-comp3520-AI-Assistant/
+comp3520-ai/
 ├── .devcontainer/
 │   └── devcontainer.json        # VS Code Dev Container configuration
-├── brian/
+├── development/
+│   └── n8n/
+│       └── .n8n/                # n8n development instance data
+├── main/
 │   ├── memory/
+│   │   ├── .Rhistory            # R history file
 │   │   ├── history.jsonl        # Persistent conversation history log
 │   │   ├── summary.md           # Active user profile / long-term memory
 │   │   └── summary.md.backup    # Backup of previous memory state
@@ -192,7 +198,7 @@ comp3520-AI-Assistant/
 ├── Main Workflow.json           # Full exported n8n workflow
 ├── DEPLOYMENT_GUIDE.md          # Step-by-step deployment instructions
 ├── MAC_Chat.command             # macOS one-click launcher for Chat UI
-├── SSH setup.md         # SSH key configuration guide
+├── SSH setup.md                 # SSH key configuration guide
 └── Windows_Chat.bat             # Windows one-click launcher for Chat UI
 ```
 
@@ -257,13 +263,12 @@ To ensure manageable development, the project is divided into three equal worklo
 
 This project runs as a Docker-based stack with n8n (workflow automation), Ollama (local LLM), Whisper (speech-to-text), and Coqui TTS (text-to-speech).
 
-```markdown
 ### Prerequisites
 
-- Docker & Docker Compose installed  
+- Docker & Docker Compose installed
   → https://docs.docker.com/get-docker/
 - Git
-- (Optional but recommended for Google OAuth public redirect)  
+- (Optional but recommended for Google OAuth public redirect)
   → ngrok account (free tier works)
 
 ### Step 1: Clone the Repository
@@ -275,7 +280,7 @@ cd comp3520-AI-Assistant
 
 ### Step 2: Prepare Environment Variables (.env)
 
-**Important – Google Credentials setup**  
+**Important – Google Credentials setup**
 1. Go to https://console.cloud.google.com/apis/credentials
 2. Create OAuth 2.0 Client ID → Web application
 3. Add authorized redirect URI:
@@ -287,6 +292,7 @@ cd comp3520-AI-Assistant
 ### Step 3: Start the Docker Stack
 
 ```bash
+cd main/n8n
 docker compose up -d
 ```
 
@@ -317,19 +323,19 @@ docker exec -it ollama ollama pull qwen3:8b
 
 ### Step 5: Configure n8n (Core Workflows + Credentials)
 
-1. Open n8n UI → http://localhost:5678  
+1. Open n8n UI → http://localhost:5678
    Create an account and login.
 
 2. **Set up credentials** (n8n → Credentials tab):
    - **Ollama** → point to internal Docker host
-   - **Google OAuth2** → use Client ID/Secret from Step 2  
-     → n8n will guide you through Google sign-in & consent  
+   - **Google OAuth2** → use Client ID/Secret from Step 2
+     → n8n will guide you through Google sign-in & consent
      → covers Gmail, Calendar, Docs, Sheets, Drive
    - **Tavily** → API key from https://tavily.com
    - **SSH Private Key/ Password** → your host machine's private key (for SSH tool). If you use private key, please refer to the SSH setup.md for more detail.
 
 
-3. **Import workflows**  
+3. **Import workflows**
    - Go to Workflows → Import from File
    - Import `Main Workflow.json` from the repository root
    - Activate the workflow
@@ -342,9 +348,9 @@ docker exec -it ollama ollama pull qwen3:8b
 
 Many features (Telegram bot webhook, Google OAuth redirect) require a public HTTPS URL.
 
-1. **Sign up** (free) → https://ngrok.com  
-2. **Download & install ngrok**  
-   - https://ngrok.com/download  
+1. **Sign up** (free) → https://ngrok.com
+2. **Download & install ngrok**
+   - https://ngrok.com/download
    - Unzip and move to a folder in your PATH (or run from Downloads)
 
 3. Authenticate (only once):
@@ -359,10 +365,10 @@ Many features (Telegram bot webhook, Google OAuth redirect) require a public HTT
 
    → You'll get a URL like `https://abcd-1234.ngrok-free.app`
 
-5. **Update Google OAuth redirect URI** (in Google Console):  
+5. **Update Google OAuth redirect URI** (in Google Console):
    Add `https://abcd-1234.ngrok-free.app/rest/oauth2-credential/callback`
 
-6. **Update Telegram webhook** (in n8n Telegram node or via API):  
+6. **Update Telegram webhook** (in n8n Telegram node or via API):
    Set webhook to `https://abcd-1234.ngrok-free.app/webhook/xxx`
 
 7. (Optional) Expose Streamlit too:
@@ -376,7 +382,7 @@ Many features (Telegram bot webhook, Google OAuth redirect) require a public HTT
 
 Once running:
 
-- Local: http://localhost:8501 (or the port defined in docker-compose for Streamlit service)  
+- Local: http://localhost:8501 (or the port defined in docker-compose for Streamlit service)
 - Via ngrok: the https URL from ngrok http 8501
 
 You should see the chat interface / dashboard for interacting with the AI assistant.
@@ -388,14 +394,7 @@ You should see the chat interface / dashboard for interacting with the AI assist
 - **TTS silent?** → `docker compose logs tts` (Coqui TTS) — accessible on port `5010`
 - **Ollama models missing?** → `docker exec -it ollama ollama list` — confirm both `llama3.2` and `qwen3:8b` are pulled
 - **Google OAuth fails?** → Double-check redirect URI matches exactly
-- **Memory not persisting?** → Ensure `brian/memory/summary.md` exists at your project root (mounted via `./../../`)
-- **Ports conflict?** → Adjust port mappings in `docker-compose.yml`
+- **Memory not persisting?** → Ensure `main/memory/summary.md` exists at your project root (mounted via `./../../`)
+- **Ports conflict?** → Adjust port mappings in `main/n8n/docker-compose.yml`
 
 Enjoy your local-first AI Personal Operations Center! 🚀
-```
-
-Feel free to adjust port numbers, folder names (`n8n_workflows/`), or service names according to your actual `docker-compose.yml`. If your repo has different structure (e.g. no Streamlit service yet), you can add a note like:
-
-> Streamlit is currently under development — you can run it manually via `streamlit run brian/streamlit.py` after installing requirements.
-
-Let me know if you want to add screenshots, architecture diagram section, or more advanced options (e.g. Caddy reverse proxy instead of ngrok).
